@@ -28,4 +28,11 @@ setup(
     license = "MIT",
     url = "http://mxs.sbrk.org/",
     packages=['labzoo'],
+    entry_points = {
+        'console_scripts': [
+            'labzoo-run = labzoo.bin.run:main',
+            'labzoo-process = labzoo.bin.process:main',
+            'labzoo-report = labzoo.bin.report:main',
+        ],
+    },
 )
