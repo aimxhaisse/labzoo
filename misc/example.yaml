@@ -1,0 +1,19 @@
+name: kernel performance
+description: a serie of benchmarks that check the performances on kernels
+checks:
+  - name: NBD latency
+    description: checks the I/O latency of a mounted NBD device
+    type: IOPingRamFS
+  - name: IPerf local
+    description: checks the local network performances
+    type: IPerfLocal
+  - name: Stress wget
+    description: checks the network and I/O performances
+    type: StressWget
+    params:
+      - parallel_runs: 1
+        duration: 10
+      - parallel_runs: 4
+        duration: 60
+      - parallel_runs: 16
+        duration: 60
