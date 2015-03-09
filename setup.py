@@ -23,8 +23,8 @@ setup(
     version = get_version(),
     author = u"Sébastien Rannou",
     author_email = "mxs@sbrk.org",
-    description = ("An environment to write, run and visualize benchmarks and "
-                   "tests on remote hosts."),
+    description = ("An environment to write, run and visualize checks "
+                   "on remote hosts."),
     license = "MIT",
     url = "http://mxs.sbrk.org/",
     packages=['labzoo'],
