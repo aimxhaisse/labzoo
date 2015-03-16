@@ -1,8 +1,11 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 import argparse
 
-from labzoo import SessionConfig
+from labzoo import (
+    Database,
+    SessionConfig,
+)
 
 
 def main():
@@ -14,4 +17,6 @@ def main():
     parser.add_argument('database', help='path to the database file of the '
                         'session')
     args = parser.parse_args()
+
     session = SessionConfig.load_from_file(args.config)
+    Database.load_db(args.database)
