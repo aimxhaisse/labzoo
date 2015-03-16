@@ -54,6 +54,12 @@ class TemplateModel(Base):
 
     @staticmethod
     def get_or_create(mksess, name, description):
+        """ I get the Template pointed by `name` or create a new template.
+
+        If there is a matching Template in the database with a
+        different description, its description gets updated by
+        `description`.
+        """
         sess = mksess()
         try:
             template = sess.query(TemplateModel) \
