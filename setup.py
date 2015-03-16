@@ -28,6 +28,12 @@ setup(
     license = "MIT",
     url = "http://mxs.sbrk.org/",
     packages=['labzoo'],
+    install_requires=[
+        'DateTime == 4.0.1',
+        'Flask == 0.10.1',
+        'PyYAML == 3.11',
+        'SQLAlchemy == 0.9.8',
+    ],
     entry_points = {
         'console_scripts': [
             'labzoo-run = labzoo.bin.run:main',
