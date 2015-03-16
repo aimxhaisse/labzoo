@@ -11,6 +11,7 @@ from sqlalchemy import (
     Column,
     DateTime,
     Integer,
+    ForeignKey,
     String,
 )
 from sqlalchemy.orm import (
@@ -42,40 +43,41 @@ class Database:
         return sessionmaker(bind=engine)
 
 
-class TemplateModel(Base):
+class SessionTemplateModel(Base):
     """ I'm the main class which holds sessions.
     """
 
-    __tablename__ = 'template'
+    __tablename__ = 'session_template'
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
     description = Column(String)
+    sessions = relationship('SessionModel', backref='template')
+    reports = relationship('SessionReportModel', backref='template')
 
     @staticmethod
-    def get_or_create(mksess, name, description):
+    def get_or_create(sess, name, description):
         """ I get the Template pointed by `name` or create a new template.
 
         If there is a matching Template in the database with a
         different description, its description gets updated by
         `description`.
         """
-        sess = mksess()
         try:
-            template = sess.query(TemplateModel) \
-                .filter(TemplateModel.name.eq(name)).one()
+            template = sess.query(SessionTemplateModel) \
+                .filter(SessionTemplateModel.name == name).one()
             if template.description != description:
                 template.description = description
                 sess.commit()
                 return template
         except NoResultFound, e:
-            template = Template(name=name, description=description)
+            template = SessionTemplateModel(name=name, description=description)
             sess.add(template)
             sess.commit()
             return template
 
     def __repr__(self):
-        return '<Template({0})>'.format(name)
+        return '<SessionTemplate({0})>'.format(name)
 
 
 class SessionModel(Base):
@@ -86,9 +88,9 @@ class SessionModel(Base):
 
     id = Column(Integer, primary_key=True)
     created_at = Column(DateTime, default=datetime.now())
-    template = relationship('TemplateModel',
-                            backref=backref('sessions', order_by=id))
+    template_id = Column(Integer, ForeignKey('session_template.id'))
     state = Column(String)
+    reports = relationship('SessionCheckModel', backref='session')
 
     # Available states.
     STATE_IN_PROGRESS = 'in_progress'
@@ -109,8 +111,8 @@ class SessionCheckModel(Base):
     name = Column(String)
     type = Column(String)
     description = Column(String)
-    session = relationship("SessionModel",
-                           backref=backref('checks', order_by=id))
+    session_id = Column(Integer, ForeignKey('session.id'))
+    params = relationship('SessionCheckParamModel', backref='check')
 
     def __repr__(self):
         return '<SessionCheck({0})>'.format(self.name)
@@ -124,8 +126,8 @@ class SessionCheckParamModel(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String, primary_key=True)
-    check = relationship("SessionCheckModel", backref=backref('params',
-                                                              order_by=id))
+    check_id = Column(Integer, ForeignKey('session_check.id'))
+    values = relationship('SessionCheckParamValueModel', backref='param')
 
     def __repr__(self):
         return '<SessionCheckParam({0})>'.format(self.name)
@@ -139,19 +141,17 @@ class SessionCheckParamValueModel(Base):
 
     id = Column(Integer, primary_key=True)
     value = Column(String, primary_key=True)
-    param = relationship("SessionCheckParamModel",
-                         backref=backref('values', order_by=id))
+    param_id = Column(Integer, ForeignKey('session_check_param.id'))
 
     def __repr__(self):
         return '<SessionCheckParamValue({0})>'.format(self.value)
 
 
-class SessionReport(Base):
+class SessionReportModel(Base):
     """ I'm a report of a session.
     """
 
     __tablename__ = 'session_report'
 
     id = Column(Integer, primary_key=True)
-    template = relationship('TemplateModel',
-                            backref=backref('sessions', order_by=id))
+    template_id = Column(Integer, ForeignKey('session_template.id'))

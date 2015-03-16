@@ -6,7 +6,7 @@ from labzoo import (
     Database,
     SessionConfig,
     SessionModel,
-    TemplateModel,
+    SessionTemplateModel,
 )
 
 
@@ -18,12 +18,18 @@ class Run(object):
         self.host = host
         self.mksess = mksess
         self.conf = conf
-        self.template = TemplateModel.get_or_create(mksess, self.conf.name,
-                                                    self.conf.description)
-        sess = self.mksess()
+        self.sess = self.mksess()
+        self.template = SessionTemplateModel \
+            .get_or_create(self.sess, self.conf.name, self.conf.description)
         self.model = SessionModel(template=self.template)
-        sess.add(self.model)
-        sess.commit()
+        self.sess.add(self.model)
+        self.sess.commit()
+
+    def set_state(self, state):
+        """ I update the state of the current Session.
+        """
+        self.model.state = state
+        self.sess.commit()
 
     def prepare(self):
         """ I prepare the environment for the session.
@@ -67,4 +73,3 @@ def main():
         except:
             run.set_state(SessionModel.STATE_FAILED)
         run.cleanup()
-        db_session.commit()
