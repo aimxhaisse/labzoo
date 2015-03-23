@@ -69,7 +69,7 @@ class SessionTemplateModel(Base):
             if template.description != description:
                 template.description = description
                 sess.commit()
-                return template
+            return template
         except NoResultFound, e:
             template = SessionTemplateModel(name=name, description=description)
             sess.add(template)
