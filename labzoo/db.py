@@ -43,11 +43,11 @@ class Database:
         return sessionmaker(bind=engine)
 
 
-class SessionTemplateModel(Base):
-    """ I'm the main class which holds sessions.
+class BenchmarkModel(Base):
+    """ I'm the main class which holds benchmark sessions.
     """
 
-    __tablename__ = 'session_template'
+    __tablename__ = 'benchmark'
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
@@ -57,38 +57,38 @@ class SessionTemplateModel(Base):
 
     @staticmethod
     def get_or_create(sess, name, description):
-        """ I get the Template pointed by `name` or create a new template.
+        """ I get the Benchmark pointed by `name` or create a new template.
 
-        If there is a matching Template in the database with a
+        If there is a matching Benchmark in the database with a
         different description, its description gets updated by
         `description`.
         """
         try:
-            template = sess.query(SessionTemplateModel) \
-                .filter(SessionTemplateModel.name == name).one()
-            if template.description != description:
-                template.description = description
+            benchmark = sess.query(BenchmarkModel) \
+                .filter(BenchmarkModel.name == name).one()
+            if benchmark.description != description:
+                benchmark.description = description
                 sess.commit()
-            return template
+            return benchmark
         except NoResultFound, e:
-            template = SessionTemplateModel(name=name, description=description)
-            sess.add(template)
+            benchmark = BenchmarkModel(name=name, description=description)
+            sess.add(benchmark)
             sess.commit()
-            return template
+            return benchmark
 
     def __repr__(self):
-        return '<SessionTemplate({0})>'.format(self.name)
+        return '<Benchmark({0})>'.format(self.name)
 
 
 class SessionModel(Base):
-    """ I'm an instance of a Template which ties checks and reports.
+    """ I'm an instance of a Benchmark which ties checks and reports.
     """
 
     __tablename__ = 'session'
 
     id = Column(Integer, primary_key=True)
     created_at = Column(DateTime, default=datetime.now())
-    template_id = Column(Integer, ForeignKey('session_template.id'))
+    benchmark_id = Column(Integer, ForeignKey('benchmark.id'))
     state = Column(String)
     reports = relationship('SessionCheckModel', backref='session')
 
@@ -98,7 +98,7 @@ class SessionModel(Base):
     STATE_FAILED = 'failed'
 
     def __repr__(self):
-        return '<Session(#{0} - {1})>'.format(self.id, self.template.name)
+        return '<Session(#{0} - {1})>'.format(self.id, self.benchmark.name)
 
 
 class SessionCheckModel(Base):
@@ -154,4 +154,4 @@ class SessionReportModel(Base):
     __tablename__ = 'session_report'
 
     id = Column(Integer, primary_key=True)
-    template_id = Column(Integer, ForeignKey('session_template.id'))
+    benchmark_id = Column(Integer, ForeignKey('benchmark.id'))

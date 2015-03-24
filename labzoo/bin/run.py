@@ -6,7 +6,7 @@ from labzoo import (
     Database,
     SessionConfig,
     SessionModel,
-    SessionTemplateModel,
+    BenchmarkModel,
 )
 
 
@@ -19,9 +19,9 @@ class Run(object):
         self.mksess = mksess
         self.conf = conf
         self.sess = self.mksess()
-        self.template = SessionTemplateModel \
+        self.benchmark = BenchmarkModel \
             .get_or_create(self.sess, self.conf.name, self.conf.description)
-        self.model = SessionModel(template=self.template)
+        self.model = SessionModel(benchmark_id=self.benchmark.id)
         self.sess.add(self.model)
         self.sess.commit()
 
