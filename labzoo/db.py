@@ -113,9 +113,26 @@ class SessionCheckModel(Base):
     description = Column(String)
     session_id = Column(Integer, ForeignKey('session.id'))
     params = relationship('SessionCheckParamModel', backref='check')
+    files = relationship('SessionCheckFile', backref='check')
 
     def __repr__(self):
         return '<SessionCheck({0})>'.format(self.name)
+
+
+class SessionCheckFile(Base):
+    """ Session checks can output one or several files.
+    """
+
+    __tablename__ = 'session_check_file'
+
+    id = Column(Integer, primary_key=True)
+    check_id = Column(Integer, ForeignKey('session_check.id'))
+    name = Column(String)
+    data = Column(String)
+    type = Column(String)
+
+    def __repr__(self):
+        return '<SessionCheckFile({0})>'.format(self.name)
 
 
 class SessionCheckParamModel(Base):
