@@ -77,7 +77,7 @@ class SessionTemplateModel(Base):
             return template
 
     def __repr__(self):
-        return '<SessionTemplate({0})>'.format(name)
+        return '<SessionTemplate({0})>'.format(self.name)
 
 
 class SessionModel(Base):

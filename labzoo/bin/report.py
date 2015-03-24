@@ -13,7 +13,7 @@ from flask import (
 from labzoo import (
     Database,
     SessionConfig,
-    SessionModel,
+    SessionTemplateModel,
 )
 
 
@@ -31,8 +31,16 @@ def before_request():
 @app.route('/')
 def home():
     sess = g.db_session()
-    benchmarks = sess.query(SessionModel).all()
+    benchmarks = sess.query(SessionTemplateModel).all()
     return render_template('home.html', benchmarks=benchmarks)
+
+
+@app.route('/bench/<id>')
+def bench(id):
+    sess = g.db_session()
+    bench = sess.query(SessionTemplateModel). \
+        filter(SessionTemplateModel.id == id).first()
+    return render_template('bench.html', bench=bench)
 
 
 def main():

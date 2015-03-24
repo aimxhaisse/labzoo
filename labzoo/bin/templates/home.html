@@ -2,12 +2,12 @@
 {% block body %}
 <div class="row">
   <div class="col-xs-12">
-    <p class="lead">Your Benchmarks</p>
-    <ul>
-      {% for bench in benchmarks %}
-      <li>{{ bench }}</li>
-      {% endfor %}
-    </ul>
+    <p class="lead">your benchmarks</p>
+
+    {% for bench in benchmarks %}
+    <h3><a href="{{ url_for('bench', id=bench.id) }}">{{ bench.name }}</a> <small>{{ bench.sessions | count }} session(s)</small></h3>
+    {% endfor %}
+
   </div>
 </div>
 {% endblock %}
