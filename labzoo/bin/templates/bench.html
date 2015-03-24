@@ -3,6 +3,15 @@
 <div class="row">
   <div class="col-xs-12">
     <p class="lead">benchmark <strong>{{ bench.name }}</strong></p>
+    <h2>report(s)</h2>
+    <h2>session(s)</h2>
+    {% for session in bench.sessions %}
+    <h4>
+      <small>
+	#{{ session.id }} <strong>{{ session.state }}</strong> - {{ session.created_at }}
+      </small>
+    </h4>
+    {% endfor %}
   </div>
 </div>
 {% endblock %}
